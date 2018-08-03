@@ -25,4 +25,5 @@ You will be provided code for an updated Node development server and a README fo
 * npm install --save-dev gulp
 
 ### Start the server
-- gulp
+* gulp build
+* gulp
