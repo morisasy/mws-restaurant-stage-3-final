@@ -11,7 +11,7 @@ You will be provided code for an updated Node development server and a README fo
 
 
 ## Development local API Server
-### Prerequirement
+### Prerequisite
 * node.js LTS Version
 * npm
 * gulp
