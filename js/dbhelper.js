@@ -27,12 +27,16 @@
   static get dbStoreName(){
     return "restaurants";
   }
+
+  static get dbStoreReviews(){
+    return "reviews";
+  }
   
 
  
  // create DB function createIndexedDB()
 static createIndexedDB() {
-  
+ /*
   if (!('indexedDB' in window)) {return null;}
   return idb.open(DBHelper.dbName, DBHelper.dbVersion, (upgradeDb) =>  {
     if (!upgradeDb.objectStoreNames.contains('restaurants')) {
@@ -41,8 +45,23 @@ static createIndexedDB() {
              
     }
   }); 
-}
+  */
+  if (!('indexedDB' in window)) {return null;}
+  return idb.open(DBHelper.dbName, 2, (upgradeDb) =>  {
+      switch(upgradeDb.oldVersion) {
+        case 0:
+          const store = upgradeDb.createObjectStore('restaurants', {
+            keyPath: 'id'});
+         
+        case 1:
+        const reviewsStore = upgradeDb.createObjectStore('reviews', {
+          keyPath: 'id'});
+        reviewsStore.createIndex('restaurant','restaurant_id');
+        }
 
+  }); 
+}
+/*
 static dbPromise() {
   
   return idb.open(DBHelper.dbName, 2, (upgradeDb) =>  {
@@ -59,6 +78,8 @@ static dbPromise() {
 
   }); 
 }
+
+*/
  
   /**
    * python3 -m http.server 3500
@@ -73,7 +94,7 @@ static dbPromise() {
     return `http://localhost:${port}/restaurants`;
   }
 
-  static getObjectStore(dbs,storeName, mode) {
+  static getObjectStore(dbs, storeName, mode) {
             let tx = dbs.transaction(storeName, mode);
         return tx.objectStore(storeName);
               
@@ -84,10 +105,10 @@ static dbPromise() {
     
     let restaurants = restaurantsJSON;
     console.log('restaurantsJSON ', restaurantsJSON);
-    const dbPromise = DBHelper.createIndexedDB();
+    const dbPromise = this.createIndexedDB();
 
      dbPromise.then(db => {
-     const store = DBHelper.getObjectStore(db, DBHelper.dbStoreName, 'readwrite');
+     const store = this.getObjectStore(db, this.dbStoreName, 'readwrite');
 
        restaurants.forEach((restaurant) => {
         store.put(restaurant);
@@ -167,6 +188,30 @@ static dbPromise() {
       }
   }
 
+  static updateFavoriteStatus(restaurantID, isFavorite){
+    const localHostUrl = DBHelper.DATABASE_URL;
+
+    const URL = `${localHostUrl}/${restaurantID}/?is_favorite=${isFavorite}`;
+    const isFavoriteData = {
+      
+        "is_favorite":isFavorite
+     };
+    const headers = new Headers({'Content-Type': 'application/json'});
+    const body = JSON.stringify(isFavoriteData);
+    let opts = {
+      method: 'PUT',
+      mode: 'cors',
+      cache: "no-cache",
+      credentials: 'same-origin',
+      headers: headers,
+      body: body
+    };
+   // DBHelper.serverPostGetPut(urlsReviews, opts)
+    this.serverPostGetPut(URL, opts)
+      .then(data =>  console.log("Favorite updated", data))
+      .catch(error => console.log('Erro', error.message));
+
+  }
 
   // Fetch all restaurants.
   
@@ -190,8 +235,8 @@ static dbPromise() {
       fetch(YOUR_RESTAURANTS_API_URL).catch(IF_CANT_FETCH_GET_DATA_FROM_indexedDB)
       .then(YOUR_CREATE_HTML_FUNCTION)
       */
-      const db_promise = DBHelper.createIndexedDB();
-      const restaurantsDB = DBHelper.getLocalData(db_promise);
+      const db_promise = this.createIndexedDB();
+      const restaurantsDB = this.getLocalData(db_promise);
         restaurantsDB.then((restaurants) => {
           //console.log('Restaurants by id:', restaurants);
           callback(null, restaurants);

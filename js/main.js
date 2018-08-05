@@ -31,12 +31,24 @@ fetchNeighborhoods = () => {
 }
 
 /**
+ *  Create an element.
+ */
+ function createNode(el){
+   return document.createElement(el);
+ }
+/**
+ *  Append an element to the parent.
+ */
+ function append(parent, el) {
+   return parent.appendChild(el);
+ }
+/**
  * Set neighborhoods HTML.
  */
 fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
   const select = document.getElementById('neighborhoods-select');
   neighborhoods.forEach(neighborhood => {
-    const option = document.createElement('option');
+    const option = createNode('option');
     option.innerHTML = neighborhood;
     option.value = neighborhood;
     select.append(option);
@@ -64,7 +76,7 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
   const select = document.getElementById('cuisines-select');
 
   cuisines.forEach(cuisine => {
-    const option = document.createElement('option');
+    const option = createNode('option');
     option.innerHTML = cuisine;
     option.value = cuisine;
     select.append(option);
@@ -140,37 +152,48 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
  * Create restaurant HTML.
  */
 createRestaurantHTML = (restaurant) => {
-  const li = document.createElement('li');
+  const li = createNode('li');
 
-  const image = document.createElement('img');
+  const image = createNode('img');
   image.className = 'restaurant-img';
   image.alt = restaurant.name;
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   li.append(image);
-
-  const name = document.createElement('h2');
+  const name = document.createElement('h2'); 
   name.innerHTML = restaurant.name;
   li.append(name);
 
-  const favoriteButton = document.createElement('button');
-  favoriteButton.innerHTML = "&#9829";
+  const favoriteBtn = createNode('button');
+  favoriteBtn.innerHTML = "&#9829";
    //&#9829;<
   // &#x2665;
-  favoriteButton.classList.add("fav_btn");
-  favoriteButton.id = "myFavorite";
-  favoriteButton.classList.add("fav_btn");
+ //favoriteButton.classList.add("fav_btn");
+  favoriteBtn.id = "myFavorite";
+  favoriteBtn.classList.add("fav_btn");
   
-  li.append(favoriteButton);
+  favoriteBtn.addEventListener('click', (event) => {
+    //event.preventDefault();
 
-  const neighborhood = document.createElement('p');
+    const isFavNow = !restaurant.is_favorite;
+    DBHelper.updateFavoriteStatus(restaurant.id, isFavNow);
+    restaurant.is_favorite = !restaurant.is_favorite;
+
+    changeFavElementClass(favoriteBtn, restaurant.is_favorite);
+   
+  });
+  changeFavElementClass(favoriteBtn, restaurant.is_favorite);
+  
+  li.append(favoriteBtn);
+
+  const neighborhood = createNode('p');
   neighborhood.innerHTML = restaurant.neighborhood;
   li.append(neighborhood);
 
-  const address = document.createElement('p');
+  const address = createNode('p');
   address.innerHTML = restaurant.address;
   li.append(address);
 
-  const more = document.createElement('a');
+  const more = createNode('a');
   more.innerHTML = 'View Details';
   more.href = DBHelper.urlForRestaurant(restaurant);
   li.append(more)
@@ -181,18 +204,22 @@ createRestaurantHTML = (restaurant) => {
 
 
 /**
- * Create restaurant HTML.
+ * Change favorite class
  */
-updateFavorite = () => {
- 
 
-  const favoriteButton = getElementById('myFavorite');
-  favoriteButton.innerHTML = "&#9829";
-   //&#9829;<
-  // &#x2665;
-  
+changeFavElementClass = (el, fav) => {
+    if (!fav){
+      el.classList.remove('favarite_yes');
+      el.classList.add('favarite_no');
+      el.setAttribute('aria-label', 'mark as favorite');
 
-  
+    }else {
+
+    el.classList.remove('favarite_no');
+    el.classList.add('favarite_yes');
+    el.setAttribute('aria-label', 'remove as favorite');
+
+    }   
 }
 
 
