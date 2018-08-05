@@ -42,6 +42,23 @@ static createIndexedDB() {
     }
   }); 
 }
+
+static dbPromise() {
+  
+  return idb.open(DBHelper.dbName, 2, (upgradeDb) =>  {
+      switch(upgradeDb.oldVersion) {
+        case 0:
+          const store = upgradeDb.createObjectStore('restaurants', {
+            keyPath: 'id'});
+         
+        case 1:
+        const reviewsStore = upgradeDb.createObjectStore('reviews', {
+          keyPath: 'id'});
+        reviews.createIndex('restaurant','restaurant_id');
+        }
+
+  }); 
+}
  
   /**
    * python3 -m http.server 3500

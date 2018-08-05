@@ -152,6 +152,16 @@ createRestaurantHTML = (restaurant) => {
   name.innerHTML = restaurant.name;
   li.append(name);
 
+  const favoriteButton = document.createElement('button');
+  favoriteButton.innerHTML = "&#9829";
+   //&#9829;<
+  // &#x2665;
+  favoriteButton.classList.add("fav_btn");
+  favoriteButton.id = "myFavorite";
+  favoriteButton.classList.add("fav_btn");
+  
+  li.append(favoriteButton);
+
   const neighborhood = document.createElement('p');
   neighborhood.innerHTML = restaurant.neighborhood;
   li.append(neighborhood);
@@ -167,6 +177,24 @@ createRestaurantHTML = (restaurant) => {
 
   return li
 }
+
+
+
+/**
+ * Create restaurant HTML.
+ */
+updateFavorite = () => {
+ 
+
+  const favoriteButton = getElementById('myFavorite');
+  favoriteButton.innerHTML = "&#9829";
+   //&#9829;<
+  // &#x2665;
+  
+
+  
+}
+
 
 /**
  * Add markers for current restaurants to the map.

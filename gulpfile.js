@@ -12,6 +12,14 @@ var gulp = require('gulp'),
     const webp = require('gulp-webp');
     const babel = require('gulp-babel');
 
+    const inlinesource = require('gulp-inline-source');
+     
+    gulp.task('inlinesource', function () {
+        return gulp.src('./*.js')
+            .pipe(inlinesource())
+            .pipe(gulp.dest('./dist/js'));
+    });
+
 
     gulp.task('es15', () => {
         return gulp.src('./js/**/*.js')
