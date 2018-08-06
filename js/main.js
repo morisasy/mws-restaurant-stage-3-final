@@ -181,6 +181,7 @@ createRestaurantHTML = (restaurant) => {
     changeFavElementClass(favoriteBtn, restaurant.is_favorite);
    
   });
+
   changeFavElementClass(favoriteBtn, restaurant.is_favorite);
   
   li.append(favoriteBtn);
@@ -196,9 +197,9 @@ createRestaurantHTML = (restaurant) => {
   const more = createNode('a');
   more.innerHTML = 'View Details';
   more.href = DBHelper.urlForRestaurant(restaurant);
-  li.append(more)
+  li.append(more);
 
-  return li
+  return li;
 }
 
 

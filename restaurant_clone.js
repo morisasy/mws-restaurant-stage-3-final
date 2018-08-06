@@ -77,7 +77,6 @@ fetchRestaurantFromURL = (callback) => {
  * Create restaurant HTML and add it to the webpage
  */
 fillRestaurantHTML = (restaurant = self.restaurant) => {
-  
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
@@ -137,8 +136,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const url = `http://localhost:1337/reviews/?restaurant_id=${id}`;
   //var currentRestaurant;
   
-    //getServerData(url,option)
-    DBHelper.serverPostGetPut(url,option)
+    getServerData(url,option)
           .then(json => {
             const restaurantReviews = json;
             let reviews1 = json;
@@ -162,33 +160,28 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
           console.log('There has been a problem with your fetch operation: ', error.message);
           //callback(error, null);
     });
-  
-}
+       
 
 /**
  * Create review HTML and add it to the webpage.
 
  */
 createReviewHTML = (review) => {
-  const li = document.createElement('li');
-  const name = document.createElement('p');
+  const li = createNode('li');
+  const name = createNode('p');
   name.innerHTML = `Name: ${review.name}`;
   li.appendChild(name);
 
-  const date = document.createElement('p');
-
+  const date = createNode('p');
   let dateObject = new Date(Date.parse(review.createdAt));
-
-  //dateReadable = dateObject.toDateString();
-  //date.innerHTML = review.createdAt;
-  date.innerHTML =`Date: ${dateObject.toDateString()}`;
+  date.innerHTML = `Date: ${dateObject.toDateString()}`;
   li.appendChild(date);
 
-  const rating = document.createElement('p');
+  const rating = createNode('p');
   rating.innerHTML = `Rating: ${review.rating}`;
   li.appendChild(rating);
 
-  const comments = document.createElement('p');
+  const comments = createNode('p');
   comments.innerHTML = review.comments;
   li.appendChild(comments);
 
@@ -200,7 +193,7 @@ createReviewHTML = (review) => {
  */
 fillBreadcrumb = (restaurant=self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
-  const li = document.createElement('li');
+  const li = createNode('li');
   li.innerHTML = restaurant.name;
   breadcrumb.appendChild(li);
 }
@@ -221,24 +214,18 @@ getParameterByName = (name, url) => {
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
-
-    
+ 
    
-  const formEl = document.getElementById("formcomment");
+const formEl = document.getElementById("formcomment");
   //const submitBtn = document.querySelector('button');
-  const urlsReviews = 'http://localhost:1337/reviews/';
+const urlsReviews = 'http://localhost:1337/reviews/';
 
 
-  function getData(){
+function getData(){
      // get a reviewer name.
      const commentorName = document.getElementById("username").value;
      const aComment = document.querySelector("textarea").value;
-    
-   
-
      const starList = document.getElementsByName("star");
-     
-       
      let aRate =1;
    
      var i;
@@ -257,15 +244,12 @@ getParameterByName = (name, url) => {
          "createdAt": new Date()
      };
      return formData;
-  }
-    
-  function postReviews() {
+ }
+
+
+ function postData() {
    
        let jsonData = getData();
-        //console.log("New comment posted :", jsonData);
-        //DBHelper.saveData(jsonData);
-         
-       
         const headers = new Headers({'Content-Type': 'application/json'});
         const body = JSON.stringify(jsonData);
         let opts = {
@@ -276,11 +260,14 @@ getParameterByName = (name, url) => {
           headers: headers,
           body: body
         }; 
-  if ( navigator.onLine ) {
-  
-     DBHelper.serverPostGetPut(urlsReviews, opts)
-            .then(data =>  console.log("Reviews added to the server",data))
-            .catch(error => console.log('Erro', error.message));  
+
+    if ( navigator.onLine ) {
+        
+    //getServerData(urlsReviews, opts)
+    //DBHelper.serverPostGetPut(urlsReviews, opts)
+    getServerData(urlsReviews, opts)
+            .then(data =>  console.log("Reviews added to the server", data))
+            .catch(error => console.log('Erro', error.message));
 
     } else {
         var result = loadFromQueue( item );
@@ -290,15 +277,15 @@ getParameterByName = (name, url) => {
         }
         return result;
     }
-    
-
+  
     document.forms["formcomment"].reset(); 
     
  } 
 
 
   // Add data to the server.
-  formEl.addEventListener('submit', function (event) {
+  formEl.addEventListener('submit', function (event){
     event.preventDefault();
-    postReviews();
+    postData();
   });
+

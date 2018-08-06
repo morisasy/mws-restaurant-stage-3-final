@@ -36,16 +36,7 @@
  
  // create DB function createIndexedDB()
 static createIndexedDB() {
- /*
-  if (!('indexedDB' in window)) {return null;}
-  return idb.open(DBHelper.dbName, DBHelper.dbVersion, (upgradeDb) =>  {
-    if (!upgradeDb.objectStoreNames.contains('restaurants')) {
-      const store = upgradeDb.createObjectStore(DBHelper.dbStoreName, {keyPath: 'id'});
-       store.createIndex('name', 'name', {unique: true});
-             
-    }
-  }); 
-  */
+ 
   if (!('indexedDB' in window)) {return null;}
   return idb.open(DBHelper.dbName, 2, (upgradeDb) =>  {
       switch(upgradeDb.oldVersion) {
@@ -61,25 +52,7 @@ static createIndexedDB() {
 
   }); 
 }
-/*
-static dbPromise() {
-  
-  return idb.open(DBHelper.dbName, 2, (upgradeDb) =>  {
-      switch(upgradeDb.oldVersion) {
-        case 0:
-          const store = upgradeDb.createObjectStore('restaurants', {
-            keyPath: 'id'});
-         
-        case 1:
-        const reviewsStore = upgradeDb.createObjectStore('reviews', {
-          keyPath: 'id'});
-        reviews.createIndex('restaurant','restaurant_id');
-        }
 
-  }); 
-}
-
-*/
  
   /**
    * python3 -m http.server 3500
@@ -130,7 +103,7 @@ static dbPromise() {
     
     return db_promise.then((db) => {
           if (!db) return;
-          const store = DBHelper.getObjectStore(db, DBHelper.dbStoreName, 'readonly');
+          const store = this.getObjectStore(db, DBHelper.dbStoreName, 'readonly');
 
           return store.getAll();
         });
@@ -141,18 +114,7 @@ static dbPromise() {
   *
  */
 
-  static isEqual(offlineData, onlineData){
-    if (offlineData.key().length == onlineData.key().lengt){
-       return  true
-    }
-
-    return false;
-  }
-
-
-  static updateData(){
-
-  }
+  
 
 
   /**
@@ -187,7 +149,18 @@ static dbPromise() {
            DBHelper.serverPostGetPut(urls,opts);
       }
   }
+  static getDataByID(objectStoreName, indexName, id){
+    var dbPromise = this.createIndexedDB();
+    return db_promise.then((db) => {
+          if (!db) return;
+          const store = this.getObjectStore(db, objectStoreName, 'readonly');
+          const storeIndex = store.index(idx);
 
+
+          return storeIndex.getAll(id);
+        });
+
+  }
   static updateFavoriteStatus(restaurantID, isFavorite){
     const localHostUrl = DBHelper.DATABASE_URL;
 
