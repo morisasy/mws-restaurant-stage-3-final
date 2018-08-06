@@ -217,6 +217,7 @@ map {
 
 /* ====================== Restaurant Filtering ====================== */
 
+
 .filter-options {
   width: 100%;
   background-color: #3397DB;
@@ -271,6 +272,8 @@ map {
   text-align: left;
   /*width: 270px; */
   min-width: 270px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
 }
 
 #restaurants-list .restaurant-img {
@@ -424,6 +427,7 @@ map {
 
 #reviews-container {
   padding: 30px 40px 80px;
+
 }
 
 #reviews-container h2 {
@@ -437,6 +441,8 @@ map {
 #reviews-list {
   margin: 0;
   padding: 0;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
 }
 
 #reviews-list li {
@@ -444,11 +450,11 @@ map {
   border: 2px solid #f3f3f3;
   display: block;
   list-style-type: none;
-  margin: 0 0 30px;
+  margin: 0 0 10px;
   overflow: hidden;
-  padding: 0 20px 20px;
+  padding: 10px 20px 10px;
   position: relative;
-  width: 85%;
+    /* width: 85%; */
 }
 
 #reviews-list li p {
@@ -554,16 +560,23 @@ input[type= "radio"] {
 
 
 
-#stars {
+#stars  {
+  display: flex;
+ 
+  border: 0;
+  /*font-size: 0; */
+}
+
+.stars_group{
   display: inline-flex;
   direction: rtl;
   text-align: center;
   width: 100px;
   border: 0;
-  /*font-size: 0; */
+  margin-left: 20px;
 }
 
-#stars label {
+#stars > .stars_group  label {
   font-size: 1em;
   line-height: 2rem;
   position: relative;
@@ -572,7 +585,7 @@ input[type= "radio"] {
   height: 2em;
 }
 
-#stars label:before {
+.stars_group label:before {
   content: "☆";
   position: absolute;
   margin: 0;
@@ -581,14 +594,14 @@ input[type= "radio"] {
   color: #aaa;
 }
 
-#stars label:hover:before,
-#stars label:hover~label:before,
-#stars input:checked~label:before {
+.stars_group label:hover:before,
+.stars_group label:hover~label:before,
+.stars_group input:checked~label:before {
   content: "★";
   color: #ffbb04;
 }
 
-#stars label:active {
+.stars_group label:active {
   color: #ccc;
   top: 1px;
 }

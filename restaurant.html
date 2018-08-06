@@ -66,14 +66,15 @@
               
             
             <div>
-              <label for="username" >Author:</label>
+              <label for="username" >Author: <span class="required" style="color: red;">*</span></label>
             <input type="text" name="username" placeholder="username" size="30" maxlength="100" required="required" class = "title" id= "username" >
  
             </div>
                          
-            <div id = "stars" aria-label="Star Rating" style="width:100px; font-size: 20px;">
-                      
-                  <input type="radio" id="stars-5" name="star" value="5"/>
+            <div id = "stars" aria-label="Star Rating" style="display: flex; width:100px; font-size: 20px;">
+              <label> Rating:<span class="required" style="color: red; width: 20px;">*</span> </label>
+                 <div class="stars_group"> 
+                   <input type="radio" id="stars-5" name="star" value="5"/>
                   <label title="5 stars" for="stars-5"></label>
                   
                   <input type="radio" id="stars-4" name="star" value="4"/>
@@ -87,12 +88,16 @@
                   
                   <input type="radio" id="stars-1" name="star" value="1"/>
                   <label title="1 stars" for="stars-1"></label>
+                   
+                 </div>
+                      
+                 
           
             </div>
             
                 
             <div>
-              <label for = "commentsText" class = "comments">Comments: </label>
+              <label for = "commentsText" class = "comments">Comments:<span class="required" style="color: red;">*</span></label>
               <textarea rows="6" cols="60" name="comment" id = "commentsText" placeholder="Write a comment here!"></textarea>
               <button> Submit Comment</button>
             </div>

@@ -149,7 +149,8 @@ static createIndexedDB() {
            DBHelper.serverPostGetPut(urls,opts);
       }
   }
-  static getDataByID(objectStoreName, indexName, id){
+
+  static getLocalDataByID(objectStoreName, indexName, id){
     var dbPromise = this.createIndexedDB();
     return db_promise.then((db) => {
           if (!db) return;
@@ -161,6 +162,7 @@ static createIndexedDB() {
         });
 
   }
+
   static updateFavoriteStatus(restaurantID, isFavorite){
     const localHostUrl = DBHelper.DATABASE_URL;
 
@@ -185,9 +187,77 @@ static createIndexedDB() {
       .catch(error => console.log('Erro', error.message));
 
   }
+   /**
+   * Add reviews to local storage
+   * Store reviews in indexdDB.
+   */
+  static addReviewsToIndexDB(reviews){
+    
+    let dbPromise = this.createIndexedDB();
+         dbPromise
+               .then((db) => {
+                   if (!db) return;
 
-  // Fetch all restaurants.
+                   const store = this.getObjectStore(db, 'reviews', 'readwrite');
+
+                   if (Array.isArray(reviews)){
+                      reviews.forEach(review => {
+                        store.put(reviews);
+                      });
+
+                   }else {
+                    store.put(reviews);
+                   }
+                    console.log('Restaurant reviews: ', reviews);
+                    return Promise.resolve(reviews);
+               }); 
+    
+  }
+  /**
+   * Fetch a review by its ID from Server.
+   * Store reviews in indexdDB.
+   */
+  static fetchReviewsById(id){
+    
+    const option = {
+      credentials: 'include'
+      };
+    const url = `http://localhost:1337/reviews/?restaurant_id=${id}`;
+    let dbPromise = this.createIndexedDB();
   
+    this.serverPostGetPut(url,option)
+      .then(reviews => {
+            db_promise
+               .then((db) => {
+                   if (!db) return;
+
+                   const store = this.getObjectStore(db, 'reviews', 'readwrite');
+
+                   if (Array.isArray(reviews)){
+                      reviews.forEach(review => {
+                        store.put(reviews);
+                      });
+
+                   }else {
+                    store.put(reviews);
+                   }
+                    console.log('Restaurant reviews: ', reviews);
+                    return Promise.resolve(reviews);
+               }); 
+      })
+      .catch((error) => {
+        return this.getLocalDataByID('reviews', 'restaurants', id)
+                      .then((storedReviews) => {
+                      console.log('Looking for local data in indexedDB: ');
+                      return Promise.resolve(storedReviews);
+                    });
+          
+           
+      });
+    
+  }
+  // Fetch all restaurants.
+ 
   static fetchRestaurants(callback) {
    //const db_promise = DBHelper.createIndexedDB();
     const URL = DBHelper.DATABASE_URL;

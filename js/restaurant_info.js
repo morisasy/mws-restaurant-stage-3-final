@@ -136,23 +136,24 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     };
   const url = `http://localhost:1337/reviews/?restaurant_id=${id}`;
   //var currentRestaurant;
-  
+  //let dbPromise = DBHelper.createIndexedDB();
+    //DBHelper.fetchReviewsById(id);
     //getServerData(url,option)
     DBHelper.serverPostGetPut(url,option)
           .then(json => {
             const restaurantReviews = json;
-            let reviews1 = json;
+            let reviews = json;
            currentRestaurant = restaurantReviews;
           console.log("current Reviews: ", json);
 
-          if (!reviews1) {
+          if (!reviews) {
             const noReviews = document.createElement('p');
             noReviews.innerHTML = 'No reviews yet!';
             container.appendChild(noReviews);
             return;
           }
           const ul = document.getElementById('reviews-list');
-          reviews1.forEach(review => {
+          reviews.forEach(review => {
             ul.appendChild(createReviewHTML(review));
           });
           container.appendChild(ul);
@@ -283,12 +284,12 @@ getParameterByName = (name, url) => {
             .catch(error => console.log('Erro', error.message));  
 
     } else {
-        var result = loadFromQueue( item );
+        var result = loadFromQueue(item);
         if ( !result ) {
             displayError();
             toLoad.push( item );
         }
-        return result;
+      
     }
     
 
