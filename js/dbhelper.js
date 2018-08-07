@@ -76,37 +76,31 @@ static createIndexedDB() {
      });
   }
   /**
- *  ioffline storage.
+ *  offline storage.
   *
  */
   static setLocalStorage(offlineData) {
-    return JSON.parse(localStorage.setItem('offlinePost', offlineData));
+    return localStorage.setItem('offlineData', offlineData);
     
   }
 
-  static getOfflinePost() {
-  return JSON.parse(localStorage.getItem('offlinePost'));
+  static getLocalStorage() {
+  return localStorage.getItem('offlineData');
+  }
+
+  static clearLocalStorage() {
+    localStorage.removeItem('offlineData');
   }
 
   static getLocalData(db_promise) {
-
-    //const dbPromise = DBHelper.createIndexedDB();
-
     
     return db_promise.then((db) => {
           if (!db) return;
           const store = this.getObjectStore(db, DBHelper.dbStoreName, 'readonly');
-
           return store.getAll();
         });
   }
 
-  /**
- *  isEqual method compare local data vs data from saver.
-  *
- */
-
-  
 
 
   /**
@@ -148,8 +142,6 @@ static createIndexedDB() {
           if (!db) return;
           const store = this.getObjectStore(db, objectStoreName, 'readonly');
           const storeIndex = store.index(indexName);
-
-
           return storeIndex.getAll(id);
         });
 
@@ -180,9 +172,6 @@ static createIndexedDB() {
    
     };
     const dbPromise = this.createIndexedDB();
-
-    
-   // DBHelper.serverPostGetPut(urlsReviews, opts)
     this.serverPostGetPut(URL, opts)
       .then(() => { 
          console.log("Favorite updated: ")
@@ -202,9 +191,6 @@ static createIndexedDB() {
          dbPromise
                .then((db) => {
                    if (!db) return;
-
-                  // const storeReviews = this.getObjectStore(db, 'reviews', 'readwrite');
-                   //const storeIndex = store.index('restaurant');
                    var tx = db.transaction('reviews', 'readwrite');
                    var storeReviews = tx.objectStore('reviews');
 
@@ -212,7 +198,6 @@ static createIndexedDB() {
                    if (Array.isArray(reviews)){
                       reviews.forEach(review => {
                         storeReviews.put(review);
-
                       console.log('Restaurant review added: ', review);
                    });
 
@@ -310,7 +295,7 @@ static createIndexedDB() {
    * invoke getlocalStorage().
    */
   static updateOnlineStatus(){
-      const  offlineData = this.getOfflinePost();
+      const  offlineData = JSON.parse(this.getLocalStorage());
 
       console.log('offline data: ',offlineData);
       const offlineReviews = querySelectorAll('.offline-views');
@@ -325,13 +310,12 @@ static createIndexedDB() {
        // messageOffline();
         //updateUI(offlineData); 
        this.addReviews(offlineData);
-
       }
-       
+      console.log('LocalState: data sent to api: ');
 
-
-    
-
+      //localStorage.removeItem(offlineData);
+      //localStorage.clear();
+      this.clearLocalStorage();
   }
 
   /**
@@ -342,11 +326,12 @@ static createIndexedDB() {
        //const  offlineReviews = JSON.parse(this.getOfflinePost());
        
        //const  offlineReviews = JSON.stringify(this.setLocalStorage(offlineData);
-      const offlineReviews = this.setLocalStorage(offlineData);
+       let postOnlineStatus = this.updateOnlineStatus();
+      const offlineReviews = JSON.stringify(this.setLocalStorage(offlineData));
 
 
     console.log('offline data: ',offlineData);
-    window.addEventListener('online',  updateOnlineStatus);
+    window.addEventListener('online',  postOnlineStatus);
    // window.addEventListener('offline', updateOnlineStatus);
 
   }
