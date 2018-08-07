@@ -2,22 +2,9 @@
  * Common database helper functions.
  */
 
-
-
-
-
-
-
  class DBHelper {
   
- /** constructor(){
-  dbPromise
-    this._dbPromise = createIndexedDB();
-  }
-  static get staticVariable(){
-    return dependency;
-    }
-  */
+ 
   static get dbName(){
     return "dbRestaurant-static";
   }
@@ -93,11 +80,12 @@ static createIndexedDB() {
   *
  */
   static setLocalStorage(offlineData) {
-    localStorage.setItem('offlinePost', offlineData);
+    return JSON.parse(localStorage.setItem('offlinePost', offlineData));
+    
   }
 
   static getOfflinePost() {
-  return localStorage.getItem('offlinePost');
+  return JSON.parse(localStorage.getItem('offlinePost'));
   }
 
   static getLocalData(db_promise) {
@@ -283,6 +271,10 @@ static createIndexedDB() {
     
   }
 
+/**
+   * Add reviews to the server.
+   * invoke fetchReviewsById().
+   */
    static addReviews(review){
     
     const option = {
@@ -310,12 +302,53 @@ static createIndexedDB() {
 
       })
       .catch(error => console.log('Fail to add a review: ', error.message));
+        
+  }
 
-    //let id = review.restaurant_id;
-    //console.log("review id: ", id);
-   // fetchReviewsById(id)
+  /**
+   * Add off reviews to the server .
+   * invoke getlocalStorage().
+   */
+  static updateOnlineStatus(){
+      const  offlineData = this.getOfflinePost();
+
+      console.log('offline data: ',offlineData);
+      const offlineReviews = querySelectorAll('.offline-views');
+      offlineReviews.forEach(el =>{
+        el.classList.remove("offline-views");
+        el.querySelector('.offline-label').remove();
+      });
+
+      if (!offlineData.length) {
+        //messageNoData();
+      } else {
+       // messageOffline();
+        //updateUI(offlineData); 
+       this.addReviews(offlineData);
+
+      }
+       
+
+
     
-    
+
+  }
+
+  /**
+   * Add off reviews to the server .
+   * invoke getlocalStorage().
+   */
+  static postOfflineReviews(offlineData){
+       //const  offlineReviews = JSON.parse(this.getOfflinePost());
+       
+       //const  offlineReviews = JSON.stringify(this.setLocalStorage(offlineData);
+      const offlineReviews = this.setLocalStorage(offlineData);
+
+
+    console.log('offline data: ',offlineData);
+    window.addEventListener('online',  updateOnlineStatus);
+   // window.addEventListener('offline', updateOnlineStatus);
+
   }
   // Fetch all restaurants.
  
@@ -330,7 +363,7 @@ static createIndexedDB() {
     .then(response => response.json())
     .then(json => {
       const restaurants = json;
-      DBHelper.saveData(restaurants);
+      this.saveData(restaurants);
       console.log('Request succeeded with JSON response', json);
       callback(null, restaurants);
     })
@@ -359,7 +392,7 @@ static createIndexedDB() {
    */
   static fetchRestaurantById(id, callback) {
     // fetch all restaurants with proper error handling.
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    this.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -378,7 +411,7 @@ static createIndexedDB() {
    */
   static fetchRestaurantByCuisine(cuisine, callback) {
     // Fetch all restaurants  with proper error handling
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    this.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -394,7 +427,7 @@ static createIndexedDB() {
    */
   static fetchRestaurantByNeighborhood(neighborhood, callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    this.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -410,7 +443,7 @@ static createIndexedDB() {
    */
   static fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    this.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -431,7 +464,7 @@ static createIndexedDB() {
    */
   static fetchNeighborhoods(callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    this.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -449,7 +482,7 @@ static createIndexedDB() {
    */
   static fetchCuisines(callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    this.fetchRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -486,7 +519,7 @@ static createIndexedDB() {
     const marker = new google.maps.Marker({
       position: restaurant.latlng,
       title: restaurant.name,
-      url: DBHelper.urlForRestaurant(restaurant),
+      url: this.urlForRestaurant(restaurant),
       map: map,
       animation: google.maps.Animation.DROP}
     );

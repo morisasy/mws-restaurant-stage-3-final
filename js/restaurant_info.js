@@ -148,7 +148,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
           console.log("current Reviews: ", json);
 
           if (!reviews) {
-            const noReviews = document.createElement('p');
+            const noReviews = createNode('p');
             noReviews.innerHTML = 'No reviews yet!';
             container.appendChild(noReviews);
             return;
@@ -183,21 +183,32 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 
  */
 createReviewHTML = (review) => {
-  const li = document.createElement('li');
-  const name = document.createElement('p');
+  const li = createNode('li');
+  // Create Temporary offline label.
+  if (!navigator.online){
+    const offLineStatus = createNode('p');
+    offLineStatus.classList.add('offline-label');
+    offLineStatus.innerHTML = "Offline";
+    offLineStatus.setAttribute("style", "color:white; width:100%; background-color: red;"):
+    li.classList.add('offline-views');
+
+    append(li, offLineStatus);
+  }
+
+  const name = createNode('p');
   name.innerHTML = `Name: ${review.name}`;
   li.appendChild(name);
 
-  const date = document.createElement('p');
+  const date = createNode('p');
   let dateObject = new Date(Date.parse(review.createdAt));
   date.innerHTML =`Date: ${dateObject.toDateString()}`;
   li.appendChild(date);
 
-  const rating = document.createElement('p');
+  const rating = createNode('p');
   rating.innerHTML = `Rating: ${review.rating}`;
   li.appendChild(rating);
 
-  const comments = document.createElement('p');
+  const comments = createNode('p');
   comments.innerHTML = review.comments;
   li.appendChild(comments);
 
@@ -209,7 +220,7 @@ createReviewHTML = (review) => {
  */
 fillBreadcrumb = (restaurant=self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
-  const li = document.createElement('li');
+  const li = createNode('li');
   li.innerHTML = restaurant.name;
   breadcrumb.appendChild(li);
 }
