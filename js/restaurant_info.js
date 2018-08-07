@@ -135,6 +135,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     credentials: 'include'
     };
   const url = `http://localhost:1337/reviews/?restaurant_id=${id}`;
+  const ul = document.getElementById('reviews-list');
   //var currentRestaurant;
   //let dbPromise = DBHelper.createIndexedDB();
     //DBHelper.fetchReviewsById(id);
@@ -152,16 +153,27 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
             container.appendChild(noReviews);
             return;
           }
-          const ul = document.getElementById('reviews-list');
+
+          //const ul = document.getElementById('reviews-list');
           reviews.forEach(review => {
             ul.appendChild(createReviewHTML(review));
           });
           container.appendChild(ul);
+         // DBHelper.addReviewsToIndexDB(reviews);
                  
           })
         .catch((error) => {
           console.log('There has been a problem with your fetch operation: ', error.message);
           //callback(error, null);
+          let offlineReviews= DBHelper.getLocalDataByID('reviews', 'restaurant', id);
+                      offlineReviews.then((storedReviews) => {
+                      console.log('Looking for local data in indexedDB: ',storedReviews);
+                      storedReviews.forEach(review => {
+                        ul.appendChild(createReviewHTML(review));
+                      });
+                      container.appendChild(ul);
+                      //return Promise.resolve(storedReviews);
+                    });
     });
   
 }
@@ -177,11 +189,7 @@ createReviewHTML = (review) => {
   li.appendChild(name);
 
   const date = document.createElement('p');
-
   let dateObject = new Date(Date.parse(review.createdAt));
-
-  //dateReadable = dateObject.toDateString();
-  //date.innerHTML = review.createdAt;
   date.innerHTML =`Date: ${dateObject.toDateString()}`;
   li.appendChild(date);
 
@@ -227,23 +235,16 @@ getParameterByName = (name, url) => {
    
   const formEl = document.getElementById("formcomment");
   //const submitBtn = document.querySelector('button');
-  const urlsReviews = 'http://localhost:1337/reviews/';
-
-
-  function getData(){
-     // get a reviewer name.
+ 
+// Get the form data
+  function getFormData(){
+     // get form data Name, comment , a rate.
      const commentorName = document.getElementById("username").value;
      const aComment = document.querySelector("textarea").value;
-    
-   
-
      const starList = document.getElementsByName("star");
-     
-       
-     let aRate =1;
-   
-     var i;
-     for (i = 0; i < starList.length; i++) {
+
+     let aRate =1
+     for (let i = 0; i < starList.length; i++) {
          if (starList[i].checked) {
              aRate = starList[i].value;
          }
@@ -251,55 +252,25 @@ getParameterByName = (name, url) => {
      
      //const urlsReviews = 'http://localhost:1337/reviews/';
      const formData = {
-         "restaurant_id": parseInt(restaurantID),
-         "name": commentorName,
-         "rating": parseInt(aRate),
-         "comments": aComment,
-         "createdAt": new Date()
+         restaurant_id: parseInt(restaurantID),
+         name: commentorName,
+         rating: parseInt(aRate),
+         comments: aComment,
+         createdAt: new Date()
      };
      return formData;
   }
     
-  function postReviews() {
-   
-       let jsonData = getData();
-        //console.log("New comment posted :", jsonData);
-        //DBHelper.saveData(jsonData);
-         
-       
-        const headers = new Headers({'Content-Type': 'application/json'});
-        const body = JSON.stringify(jsonData);
-        let opts = {
-          method: 'POST',
-          mode: 'no-cors',
-          cache: "no-cache",
-          credentials: 'same-origin',
-          headers: headers,
-          body: body
-        }; 
-  if ( navigator.onLine ) {
-  
-     DBHelper.serverPostGetPut(urlsReviews, opts)
-            .then(data =>  console.log("Reviews added to the server",data))
-            .catch(error => console.log('Erro', error.message));  
 
-    } else {
-        var result = loadFromQueue(item);
-        if ( !result ) {
-            displayError();
-            toLoad.push( item );
-        }
-      
-    }
-    
+  function postReview() {
+    event.preventDefault();
+    let reviewData = getFormData();
+    //let offlineData = reviewData;
 
+    DBHelper.addReviews(reviewData);
+    //addReviewToHtml(reviewData);
     document.forms["formcomment"].reset(); 
+    //document.getElementById('formcomment').reset();
     
  } 
-
-
-  // Add data to the server.
-  formEl.addEventListener('submit', function (event) {
-    event.preventDefault();
-    postReviews();
-  });
+ 

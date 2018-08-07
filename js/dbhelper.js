@@ -88,6 +88,10 @@ static createIndexedDB() {
        })
      });
   }
+  /**
+ *  ioffline storage.
+  *
+ */
   static setLocalStorage(offlineData) {
     localStorage.setItem('offlinePost', offlineData);
   }
@@ -152,10 +156,10 @@ static createIndexedDB() {
 
   static getLocalDataByID(objectStoreName, indexName, id){
     var dbPromise = this.createIndexedDB();
-    return db_promise.then((db) => {
+    return dbPromise.then((db) => {
           if (!db) return;
           const store = this.getObjectStore(db, objectStoreName, 'readonly');
-          const storeIndex = store.index(idx);
+          const storeIndex = store.index(indexName);
 
 
           return storeIndex.getAll(id);
@@ -165,12 +169,17 @@ static createIndexedDB() {
 
   static updateFavoriteStatus(restaurantID, isFavorite){
     const localHostUrl = DBHelper.DATABASE_URL;
+    //const URL = DBHelper.DATABASE_URL;
 
-    const URL = `${localHostUrl}/${restaurantID}/?is_favorite=${isFavorite}`;
+    //const URL = `${localHostUrl}/${restaurantID}/?is_favorite=${isFavorite}`;
+    console.log('updated favorite id', restaurantID);
+    const URL = `${localHostUrl}/${restaurantID}`;
+   
+    
     const isFavoriteData = {
-      
-        "is_favorite":isFavorite
+        is_favorite: isFavorite
      };
+     //    body: body
     const headers = new Headers({'Content-Type': 'application/json'});
     const body = JSON.stringify(isFavoriteData);
     let opts = {
@@ -180,10 +189,16 @@ static createIndexedDB() {
       credentials: 'same-origin',
       headers: headers,
       body: body
+   
     };
+    const dbPromise = this.createIndexedDB();
+
+    
    // DBHelper.serverPostGetPut(urlsReviews, opts)
     this.serverPostGetPut(URL, opts)
-      .then(data =>  console.log("Favorite updated", data))
+      .then(() => { 
+         console.log("Favorite updated: ")
+      })
       .catch(error => console.log('Erro', error.message));
 
   }
@@ -191,24 +206,33 @@ static createIndexedDB() {
    * Add reviews to local storage
    * Store reviews in indexdDB.
    */
-  static addReviewsToIndexDB(reviews){
+  static addReviewsToIndexDB(reviewsAdded){
+    const reviews = reviewsAdded;
+    console.log("reviews to be added: ", reviews);
     
     let dbPromise = this.createIndexedDB();
          dbPromise
                .then((db) => {
                    if (!db) return;
 
-                   const store = this.getObjectStore(db, 'reviews', 'readwrite');
+                  // const storeReviews = this.getObjectStore(db, 'reviews', 'readwrite');
+                   //const storeIndex = store.index('restaurant');
+                   var tx = db.transaction('reviews', 'readwrite');
+                   var storeReviews = tx.objectStore('reviews');
+
 
                    if (Array.isArray(reviews)){
                       reviews.forEach(review => {
-                        store.put(reviews);
-                      });
+                        storeReviews.put(review);
+
+                      console.log('Restaurant review added: ', review);
+                   });
 
                    }else {
-                    store.put(reviews);
+                    console.log("reviews to be stored: ", reviews);
+                     storeReviews.put(reviews);
+                    console.log('Restaurant reviews added: ', reviews);
                    }
-                    console.log('Restaurant reviews: ', reviews);
                     return Promise.resolve(reviews);
                }); 
     
@@ -227,7 +251,7 @@ static createIndexedDB() {
   
     this.serverPostGetPut(url,option)
       .then(reviews => {
-            db_promise
+            dbPromise
                .then((db) => {
                    if (!db) return;
 
@@ -235,18 +259,20 @@ static createIndexedDB() {
 
                    if (Array.isArray(reviews)){
                       reviews.forEach(review => {
-                        store.put(reviews);
+                        store.put(review);
+                        console.log('Restaurant review added: ', review);
                       });
 
                    }else {
                     store.put(reviews);
+                    console.log('Restaurant reviews added: ', reviews);
                    }
-                    console.log('Restaurant reviews: ', reviews);
+                    
                     return Promise.resolve(reviews);
                }); 
       })
       .catch((error) => {
-        return this.getLocalDataByID('reviews', 'restaurants', id)
+        return this.getLocalDataByID('reviews', 'restaurant', id)
                       .then((storedReviews) => {
                       console.log('Looking for local data in indexedDB: ');
                       return Promise.resolve(storedReviews);
@@ -254,6 +280,41 @@ static createIndexedDB() {
           
            
       });
+    
+  }
+
+   static addReviews(review){
+    
+    const option = {
+      credentials: 'include'
+      };
+    const headers = new Headers({'Content-Type': 'application/json'});
+    const body = JSON.stringify(review);
+    let opts = {
+      method: 'POST',
+      mode: 'cors',
+      cache: "no-cache",
+      credentials: 'same-origin',
+      headers: headers,
+      body: body
+   
+    };
+
+    // DBHelper.serverPostGetPut(urlsReviews, opts)
+    const urlsReviews = `http://localhost:1337/reviews/`;
+    this.serverPostGetPut(urlsReviews, opts)
+      .then((data) => {
+
+        console.log("review added: ", data.restaurant_id);
+         this.fetchReviewsById(data.restaurant_id);
+
+      })
+      .catch(error => console.log('Fail to add a review: ', error.message));
+
+    //let id = review.restaurant_id;
+    //console.log("review id: ", id);
+   // fetchReviewsById(id)
+    
     
   }
   // Fetch all restaurants.

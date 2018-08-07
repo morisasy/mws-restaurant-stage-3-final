@@ -77,6 +77,7 @@ fetchRestaurantFromURL = (callback) => {
  * Create restaurant HTML and add it to the webpage
  */
 fillRestaurantHTML = (restaurant = self.restaurant) => {
+  
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
@@ -134,54 +135,69 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     credentials: 'include'
     };
   const url = `http://localhost:1337/reviews/?restaurant_id=${id}`;
+  const ul = document.getElementById('reviews-list');
   //var currentRestaurant;
-  
-    getServerData(url,option)
+  //let dbPromise = DBHelper.createIndexedDB();
+    //DBHelper.fetchReviewsById(id);
+    //getServerData(url,option)
+    DBHelper.serverPostGetPut(url,option)
           .then(json => {
             const restaurantReviews = json;
-            let reviews1 = json;
+            let reviews = json;
            currentRestaurant = restaurantReviews;
           console.log("current Reviews: ", json);
 
-          if (!reviews1) {
+          if (!reviews) {
             const noReviews = document.createElement('p');
             noReviews.innerHTML = 'No reviews yet!';
             container.appendChild(noReviews);
             return;
           }
-          const ul = document.getElementById('reviews-list');
-          reviews1.forEach(review => {
+
+          //const ul = document.getElementById('reviews-list');
+          reviews.forEach(review => {
             ul.appendChild(createReviewHTML(review));
           });
           container.appendChild(ul);
+         // DBHelper.addReviewsToIndexDB(reviews);
                  
           })
         .catch((error) => {
           console.log('There has been a problem with your fetch operation: ', error.message);
           //callback(error, null);
+          let offlineReviews= DBHelper.getLocalDataByID('reviews', 'restaurant', id);
+                      offlineReviews.then((storedReviews) => {
+                      console.log('Looking for local data in indexedDB: ',storedReviews);
+                      storedReviews.forEach(review => {
+                        ul.appendChild(createReviewHTML(review));
+                      });
+                      container.appendChild(ul);
+                      //return Promise.resolve(storedReviews);
+                    });
     });
-       
+  
+}
 
 /**
  * Create review HTML and add it to the webpage.
 
  */
 createReviewHTML = (review) => {
-  const li = createNode('li');
-  const name = createNode('p');
+  const li = document.createElement('li');
+  const name = document.createElement('p');
   name.innerHTML = `Name: ${review.name}`;
   li.appendChild(name);
 
-  const date = createNode('p');
+  const date = document.createElement('p');
   let dateObject = new Date(Date.parse(review.createdAt));
-  date.innerHTML = `Date: ${dateObject.toDateString()}`;
+  date.innerHTML =`Date: ${dateObject.toDateString()}`;
   li.appendChild(date);
 
-  const rating = createNode('p');
+  const rating = document.createElement('p');
   rating.innerHTML = `Rating: ${review.rating}`;
   li.appendChild(rating);
 
-  const comments = createNode('p');
+  const comments = document.createElement('p');
   comments.innerHTML = review.comments;
   li.appendChild(comments);
 
@@ -193,7 +209,7 @@ createReviewHTML = (review) => {
  */
 fillBreadcrumb = (restaurant=self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
-  const li = createNode('li');
+  const li = document.createElement('li');
   li.innerHTML = restaurant.name;
   breadcrumb.appendChild(li);
 }
@@ -214,22 +230,22 @@ getParameterByName = (name, url) => {
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
- 
+
+    
    
-const formEl = document.getElementById("formcomment");
+  const formEl = document.getElementById("formcomment");
   //const submitBtn = document.querySelector('button');
-const urlsReviews = 'http://localhost:1337/reviews/';
+ 
 
 
-function getData(){
-     // get a reviewer name.
+  function getData(){
+     // get form data Name, comment , a rate.
      const commentorName = document.getElementById("username").value;
      const aComment = document.querySelector("textarea").value;
      const starList = document.getElementsByName("star");
-     let aRate =1;
-   
-     var i;
-     for (i = 0; i < starList.length; i++) {
+
+     let aRate =1
+     for (let i = 0; i < starList.length; i++) {
          if (starList[i].checked) {
              aRate = starList[i].value;
          }
@@ -237,21 +253,28 @@ function getData(){
      
      //const urlsReviews = 'http://localhost:1337/reviews/';
      const formData = {
-         "restaurant_id": parseInt(restaurantID),
-         "name": commentorName,
-         "rating": parseInt(aRate),
-         "comments": aComment,
-         "createdAt": new Date()
+         restaurant_id: parseInt(restaurantID),
+         name: commentorName,
+         rating: parseInt(aRate),
+         comments: aComment,
+         createdAt: new Date()
      };
      return formData;
- }
-
-
- function postData() {
+  }
+    
+  function postReview() {
+     event.preventDefault();
+     DBHelper.addReviews(reviews)
+       const urlsReviews = 'http://localhost:1337/reviews/';
    
-       let jsonData = getData();
+       let reviewData = getData();
+       let offlineData = reviewData;
+        //console.log("New comment posted :", jsonData);
+        //DBHelper.saveData(jsonData);
+         
+       
         const headers = new Headers({'Content-Type': 'application/json'});
-        const body = JSON.stringify(jsonData);
+        const body = JSON.stringify(reviewData);
         let opts = {
           method: 'POST',
           mode: 'no-cors',
@@ -260,32 +283,23 @@ function getData(){
           headers: headers,
           body: body
         }; 
-
-    if ( navigator.onLine ) {
+  const id = getParameterByName('id');
+  //DBHelper.fetchReviewsById(id);
+  if (navigator.onLine) {
+      
+     // DBHelper.addReviewsToIndexDB(offlineData, parseInt(id));
+     // const id = getParameterByName('id');
+     
+  
+     DBHelper.serverPostGetPut(urlsReviews, opts);
+     DBHelper.fetchReviewsById(id);
         
-    //getServerData(urlsReviews, opts)
-    //DBHelper.serverPostGetPut(urlsReviews, opts)
-    getServerData(urlsReviews, opts)
-            .then(data =>  console.log("Reviews added to the server", data))
-            .catch(error => console.log('Erro', error.message));
 
     } else {
-        var result = loadFromQueue( item );
-        if ( !result ) {
-            displayError();
-            toLoad.push( item );
-        }
-        return result;
+        var offlineDataToStore = DBHelper.setLocalStorage(offlineData);
     }
-  
+    //DBHelper.fetchReviewsById(id);
     document.forms["formcomment"].reset(); 
     
  } 
-
-
-  // Add data to the server.
-  formEl.addEventListener('submit', function (event){
-    event.preventDefault();
-    postData();
-  });
-
+ 

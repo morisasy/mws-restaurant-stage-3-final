@@ -331,6 +331,7 @@ map {
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
+  width: 100%;
 }
 
 /* ====================== Restaurant Details ====================== */

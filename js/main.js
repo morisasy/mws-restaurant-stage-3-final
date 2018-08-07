@@ -159,31 +159,29 @@ createRestaurantHTML = (restaurant) => {
   image.alt = restaurant.name;
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   li.append(image);
-  const name = document.createElement('h2'); 
+  const name = createNode('h2'); 
   name.innerHTML = restaurant.name;
   li.append(name);
 
   const favoriteBtn = createNode('button');
+
   favoriteBtn.innerHTML = "&#9829";
-   //&#9829;<
-  // &#x2665;
- //favoriteButton.classList.add("fav_btn");
   favoriteBtn.id = "myFavorite";
   favoriteBtn.classList.add("fav_btn");
-  
+    
   favoriteBtn.addEventListener('click', (event) => {
     //event.preventDefault();
 
     const isFavNow = !restaurant.is_favorite;
     DBHelper.updateFavoriteStatus(restaurant.id, isFavNow);
-    restaurant.is_favorite = !restaurant.is_favorite;
+     //restaurant.is_favorite = !restaurant.is_favorite;
+    restaurant.is_favorite = isFavNow;
 
-    changeFavElementClass(favoriteBtn, restaurant.is_favorite);
+    changeFavElementClass(favoriteBtn, isFavNow);
    
   });
 
-  changeFavElementClass(favoriteBtn, restaurant.is_favorite);
-  
+  changeFavElementClass(favoriteBtn, restaurant.is_favorite);  
   li.append(favoriteBtn);
 
   const neighborhood = createNode('p');
