@@ -334,6 +334,14 @@ map {
   width: 100%;
 }
 
+.offline-label {
+  background: red;
+  position: fixed;
+  width: 100%;
+  font: bold 1em sans-serif;
+  color: #FFF;
+  padding: 0.5em;
+}
 /* ====================== Restaurant Details ====================== */
 
 .inside header {

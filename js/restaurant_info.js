@@ -110,13 +110,13 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 
     const day = createNode('td');
     day.innerHTML = key;
-    row.appendChild(day);
+    append(row, day);
 
     const time = createNode('td');
     time.innerHTML = operatingHours[key];
-    row.appendChild(time);
+    append(row, time);
 
-    hours.appendChild(row);
+    append(hours,row);
   }
 }
 
@@ -127,7 +127,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
   const title = createNode('h2');
   title.innerHTML = 'Reviews';
-  container.appendChild(title);
+  append(container, title);
   //let currentRestaurant;
   //var reviews1;
   const id = getParameterByName('id');
@@ -136,6 +136,13 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     };
   const url = `http://localhost:1337/reviews/?restaurant_id=${id}`;
   const ul = document.getElementById('reviews-list');
+  /**
+  const getReviews = DBHelper.fetchReviewsById(id);
+        getReviews.then(review => {
+          console.log('Reviews online or offline', getReviews);
+        });
+  */
+  
   //var currentRestaurant;
   //let dbPromise = DBHelper.createIndexedDB();
     //DBHelper.fetchReviewsById(id);
@@ -150,15 +157,15 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
           if (!reviews) {
             const noReviews = createNode('p');
             noReviews.innerHTML = 'No reviews yet!';
-            container.appendChild(noReviews);
+            append(container, noReviews);
             return;
           }
 
           //const ul = document.getElementById('reviews-list');
           reviews.forEach(review => {
-            ul.appendChild(createReviewHTML(review));
+            append(ul, createReviewHTML(review));
           });
-          container.appendChild(ul);
+            append(container, ul);
          // DBHelper.addReviewsToIndexDB(reviews);
                  
           })
@@ -169,11 +176,11 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
                       offlineReviews.then((storedReviews) => {
                       console.log('Looking for local data in indexedDB: ',storedReviews);
                       storedReviews.forEach(review => {
-                        ul.appendChild(createReviewHTML(review));
+                        append(ul, createReviewHTML(review));
                       });
-                      container.appendChild(ul);
+                      append(container, ul);
                       //return Promise.resolve(storedReviews);
-                    });
+          });
     });
   
 }
@@ -185,11 +192,13 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 createReviewHTML = (review) => {
   const li = createNode('li');
   // Create Temporary offline label.
-  if (!navigator.online){
+  // navigator.onLine
+
+  if (!window.navigator.onLine){
     const offLineStatus = createNode('p');
     offLineStatus.classList.add('offline-label');
     offLineStatus.innerHTML = "Offline";
-    offLineStatus.setAttribute("style", "color:white; width:100%; background-color: red;"):
+    //offLineStatus.setAttribute("style", "color:white; width:100%; background-color: red;"):
     li.classList.add('offline-views');
 
     append(li, offLineStatus);
@@ -197,21 +206,24 @@ createReviewHTML = (review) => {
 
   const name = createNode('p');
   name.innerHTML = `Name: ${review.name}`;
-  li.appendChild(name);
+  append(li, name);
 
   const date = createNode('p');
-  let dateObject = new Date(Date.parse(review.createdAt));
+  
+  let dateObject = new Date(review.createdAt);
   date.innerHTML =`Date: ${dateObject.toDateString()}`;
-  li.appendChild(date);
+  append(li, date);
+  
 
   const rating = createNode('p');
   rating.innerHTML = `Rating: ${review.rating}`;
-  li.appendChild(rating);
+  append(li, rating);
+  
 
   const comments = createNode('p');
   comments.innerHTML = review.comments;
-  li.appendChild(comments);
-
+  append(li, comments);
+ 
   return li;
 }
 
@@ -279,7 +291,7 @@ getParameterByName = (name, url) => {
     //let offlineData = reviewData;
 
     DBHelper.addReviews(reviewData);
-    //addReviewToHtml(reviewData);
+    createReviewHTML(reviewData);
     document.forms["formcomment"].reset(); 
     //document.getElementById('formcomment').reset();
     
