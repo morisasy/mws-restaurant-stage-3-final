@@ -35,6 +35,7 @@ static createIndexedDB() {
         const reviewsStore = upgradeDb.createObjectStore('reviews', {
           keyPath: 'id'});
         reviewsStore.createIndex('restaurant','restaurant_id');
+        //reviewsStore.createIndex('restaurant','restaurant_id', {unique: true});
         }
 
   }); 
@@ -130,36 +131,35 @@ static createIndexedDB() {
           headers: headers,
           body: localData
         }; 
-     let localData = DBHelper.getOfflinePost();
+     let localData = this.getOfflinePost();
      if(localData) {
-           DBHelper.serverPostGetPut(urls,opts);
+           this.serverPostGetPut(urls,opts);
       }
   }
 
-  static getLocalDataByID(objectStoreName, indexName, id){
-    var dbPromise = this.createIndexedDB();
+  static getLocalDataByID(objectStoreName, indexName, indexID){
+    const dbPromise = this.createIndexedDB();
+    let id = parseInt(indexID);
     return dbPromise.then((db) => {
           if (!db) return;
           const store = this.getObjectStore(db, objectStoreName, 'readonly');
           const storeIndex = store.index(indexName);
-          return storeIndex.getAll(id);
+          //storeIndex.getAll(id);
+          
+          return Promise.resolve(storeIndex.getAll(id));
         });
 
   }
 
   static updateFavoriteStatus(restaurantID, isFavorite){
-    const localHostUrl = DBHelper.DATABASE_URL;
-    //const URL = DBHelper.DATABASE_URL;
-
-    //const URL = `${localHostUrl}/${restaurantID}/?is_favorite=${isFavorite}`;
+    const localHostUrl = this.DATABASE_URL;
     console.log('updated favorite id', restaurantID);
     const URL = `${localHostUrl}/${restaurantID}`;
    
-    
     const isFavoriteData = {
         is_favorite: isFavorite
      };
-     //    body: body
+     
     const headers = new Headers({'Content-Type': 'application/json'});
     const body = JSON.stringify(isFavoriteData);
     let opts = {
@@ -171,7 +171,7 @@ static createIndexedDB() {
       body: body
    
     };
-    const dbPromise = this.createIndexedDB();
+    //const dbPromise = this.createIndexedDB();
     this.serverPostGetPut(URL, opts)
       .then(() => { 
          console.log("Favorite updated: ")
@@ -220,6 +220,7 @@ static createIndexedDB() {
       credentials: 'include'
       };
     const url = `http://localhost:1337/reviews/?restaurant_id=${id}`;
+    //const idx = parseInt(id);
     let dbPromise = this.createIndexedDB();
   
     this.serverPostGetPut(url,option)
@@ -233,14 +234,12 @@ static createIndexedDB() {
                    if (Array.isArray(reviews)){
                       reviews.forEach(review => {
                         store.put(review);
-                        console.log('Restaurant review added: ', review);
                       });
 
                    }else {
                     store.put(reviews);
-                    console.log('Restaurant reviews added: ', reviews);
                    }
-                    
+                    console.log('Restaurant reviews added: ', reviews);
                     return Promise.resolve(reviews);
                }); 
       })
@@ -282,7 +281,7 @@ static createIndexedDB() {
     this.serverPostGetPut(urlsReviews, opts)
       .then((data) => {
 
-        console.log("review added: ", data.restaurant_id);
+        console.log("Review added by addReviews: ", data.restaurant_id);
          this.fetchReviewsById(data.restaurant_id);
 
       })
@@ -338,34 +337,27 @@ static createIndexedDB() {
   // Fetch all restaurants.
  
   static fetchRestaurants(callback) {
-   //const db_promise = DBHelper.createIndexedDB();
-    const URL = DBHelper.DATABASE_URL;
+   const db_promise = this.createIndexedDB();
+    const URL = this.DATABASE_URL;
     const opt = {
     credentials: 'include'
     } 
-   //DBHelper.serverPostGetPut(URL,opt)
-   fetch(URL, opt)
-    .then(response => response.json())
-    .then(json => {
-      const restaurants = json;
-      this.saveData(restaurants);
-      console.log('Request succeeded with JSON response', json);
-      callback(null, restaurants);
-    })
-    .catch((error) => {
-      /* 
-      fetch(YOUR_RESTAURANTS_API_URL).catch(IF_CANT_FETCH_GET_DATA_FROM_indexedDB)
-      .then(YOUR_CREATE_HTML_FUNCTION)
-      */
-      const db_promise = this.createIndexedDB();
-      const restaurantsDB = this.getLocalData(db_promise);
-        restaurantsDB.then((restaurants) => {
-          //console.log('Restaurants by id:', restaurants);
+     this.serverPostGetPut(URL, opt)
+        .then(json => {
+          const restaurants = json;
+          this.saveData(restaurants);
+          console.log('Request succeeded with JSON response', json);
           callback(null, restaurants);
+        })
+        .catch((error) => {
+          //const db_promise = this.createIndexedDB();
+          const restaurantsDB = this.getLocalData(db_promise);
+            restaurantsDB.then((restaurants) => {
+              callback(null, restaurants);
+            });
+          console.log('There has been a problem with your fetch operation: ', error.message);
+          
         });
-      console.log('There has been a problem with your fetch operation: ', error.message);
-      //callback(error, null);
-    });
 
 
   }

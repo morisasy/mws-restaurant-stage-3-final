@@ -35,17 +35,7 @@ window.initMap = () => {
    return parent.appendChild(el);
  }
 
-/**
- *  Get / Post / Put data to the server.
- */
-function getServerData(url,options) {
-  return fetch(url,options).then(response => {
-    if (!response.ok) {
-      throw Error(response.statusText);
-    }
-    return response.json();
-  });
-}
+
 /**
  * Get current restaurant from page URL.
  */
@@ -128,61 +118,29 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const title = createNode('h2');
   title.innerHTML = 'Reviews';
   append(container, title);
-  //let currentRestaurant;
-  //var reviews1;
-  const id = getParameterByName('id');
-  const option = {
-    credentials: 'include'
-    };
-  const url = `http://localhost:1337/reviews/?restaurant_id=${id}`;
+ 
+  const id = parseInt(getParameterByName('id'));
+
   const ul = document.getElementById('reviews-list');
-  /**
-  const getReviews = DBHelper.fetchReviewsById(id);
-        getReviews.then(review => {
-          console.log('Reviews online or offline', getReviews);
-        });
-  */
-  
-  //var currentRestaurant;
-  //let dbPromise = DBHelper.createIndexedDB();
-    //DBHelper.fetchReviewsById(id);
-    //getServerData(url,option)
-    DBHelper.serverPostGetPut(url,option)
-          .then(json => {
-            const restaurantReviews = json;
-            let reviews = json;
-           currentRestaurant = restaurantReviews;
-          console.log("current Reviews: ", json);
+  let getReviews = DBHelper.fetchReviewsById(id);
 
-          if (!reviews) {
-            const noReviews = createNode('p');
-            noReviews.innerHTML = 'No reviews yet!';
-            append(container, noReviews);
-            return;
-          }
 
-          //const ul = document.getElementById('reviews-list');
-          reviews.forEach(review => {
-            append(ul, createReviewHTML(review));
-          });
-            append(container, ul);
-         // DBHelper.addReviewsToIndexDB(reviews);
-                 
-          })
-        .catch((error) => {
-          console.log('There has been a problem with your fetch operation: ', error.message);
-          //callback(error, null);
-          let offlineReviews= DBHelper.getLocalDataByID('reviews', 'restaurant', id);
+  let offlineReviews= DBHelper.getLocalDataByID('reviews', 'restaurant', id);
+  console.log('Looking for local storedReviews: ', offlineReviews);
                       offlineReviews.then((storedReviews) => {
-                      console.log('Looking for local data in indexedDB: ',storedReviews);
-                      storedReviews.forEach(review => {
+                      console.log('Looking for local data in offlineReviews: ',storedReviews);
+                      storedReviews.reverse().forEach(review => {
                         append(ul, createReviewHTML(review));
                       });
                       append(container, ul);
                       //return Promise.resolve(storedReviews);
-          });
+  }).catch((error) => {
+          console.log('No reviews yet! ', error.message);
+          const noReviews = createNode('p');
+          noReviews.innerHTML = 'No reviews yet!';
+          append(container, noReviews);
+          
     });
-  
 }
 
 /**
@@ -209,7 +167,7 @@ createReviewHTML = (review) => {
   append(li, name);
 
   const date = createNode('p');
-  
+
   let dateObject = new Date(review.createdAt);
   date.innerHTML =`Date: ${dateObject.toDateString()}`;
   append(li, date);
@@ -274,12 +232,13 @@ getParameterByName = (name, url) => {
      }
      
      //const urlsReviews = 'http://localhost:1337/reviews/';
+    //let createdAt = new Date()
      const formData = {
          restaurant_id: parseInt(restaurantID),
          name: commentorName,
          rating: parseInt(aRate),
          comments: aComment,
-         createdAt: new Date()
+         createdAt: (new Date()).getTime()
      };
      return formData;
   }
@@ -291,7 +250,7 @@ getParameterByName = (name, url) => {
     //let offlineData = reviewData;
 
     DBHelper.addReviews(reviewData);
-    createReviewHTML(reviewData);
+    //createReviewHTML(reviewData);
     document.forms["formcomment"].reset(); 
     //document.getElementById('formcomment').reset();
     
