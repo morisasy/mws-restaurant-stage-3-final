@@ -151,15 +151,15 @@ createReviewHTML = (review) => {
   const li = createNode('li');
   // Create Temporary offline label.
   // navigator.onLine
+  //!window.navigator.onLine
 
-  if (!window.navigator.onLine){
-    const offLineStatus = createNode('p');
+  if (!navigator.onLine){
+     const offLineStatus = createNode('p');
     offLineStatus.classList.add('offline-label');
     offLineStatus.innerHTML = "Offline";
     //offLineStatus.setAttribute("style", "color:white; width:100%; background-color: red;"):
     li.classList.add('offline-views');
-
-    append(li, offLineStatus);
+    append(li, offLineStatus);   
   }
 
   const name = createNode('p');
@@ -215,10 +215,10 @@ getParameterByName = (name, url) => {
     
    
   const formEl = document.getElementById("formcomment");
-  //const submitBtn = document.querySelector('button');
+
  
 // Get the form data
-  function getFormData(){
+  getFormData = () => {
      // get form data Name, comment , a rate.
      const commentorName = document.getElementById("username").value;
      const aComment = document.querySelector("textarea").value;
@@ -231,8 +231,6 @@ getParameterByName = (name, url) => {
          }
      }
      
-     //const urlsReviews = 'http://localhost:1337/reviews/';
-    //let createdAt = new Date()
      const formData = {
          restaurant_id: parseInt(restaurantID),
          name: commentorName,
@@ -244,13 +242,20 @@ getParameterByName = (name, url) => {
   }
     
 
-  function postReview() {
+  postReview = () => {
     event.preventDefault();
     let reviewData = getFormData();
     //let offlineData = reviewData;
 
-    DBHelper.addReviews(reviewData);
-    //createReviewHTML(reviewData);
+  if (!navigator.onLine){
+    createReviewHTML(reviewData);
+    console.log("update UI offLineStatus", reviewData);
+     
+  }
+
+    
+  DBHelper.addReviews(reviewData);
+    
     document.forms["formcomment"].reset(); 
     //document.getElementById('formcomment').reset();
     

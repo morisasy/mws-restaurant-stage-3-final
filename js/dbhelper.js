@@ -260,6 +260,12 @@ static createIndexedDB() {
    * invoke fetchReviewsById().
    */
    static addReviews(review){
+
+    if (!window.navigator.onLine){
+      const offlineReviews = DBHelper.setLocalStorage(JSON.stringify(review));
+      console.log("offline reviews saved", offlineReviews);
+    }
+   
     
     const option = {
       credentials: 'include'
@@ -294,7 +300,7 @@ static createIndexedDB() {
    * invoke getlocalStorage().
    */
   static updateOnlineStatus(){
-      const  offlineData = JSON.parse(this.getLocalStorage());
+      const  offlineData = JSON.parse(DBHelper.getLocalStorage());
 
       console.log('offline data: ',offlineData);
       const offlineReviews = querySelectorAll('.offline-views');
@@ -303,13 +309,9 @@ static createIndexedDB() {
         el.querySelector('.offline-label').remove();
       });
 
-      if (!offlineData.length) {
-        //messageNoData();
-      } else {
-       // messageOffline();
-        //updateUI(offlineData); 
-       this.addReviews(offlineData);
-      }
+      if (offlineData.length) {
+        this.addReviews(offlineData);
+      } 
       console.log('LocalState: data sent to api: ');
 
       //localStorage.removeItem(offlineData);

@@ -336,7 +336,8 @@ map {
 
 .offline-label {
   background: red;
-  position: fixed;
+  display: block;
+  width: 20px;
   width: 100%;
   font: bold 1em sans-serif;
   color: #FFF;
