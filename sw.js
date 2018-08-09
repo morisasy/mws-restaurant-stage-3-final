@@ -23,6 +23,8 @@ var CACHE_URLS = [
           '/img/10.jpg'          
 ];
 
+
+
 self.addEventListener('install', function (event) {
  
     event.waitUntil(
@@ -59,6 +61,8 @@ self.addEventListener('activate', function(event) {
     );
   });
 
+
+  
 
 
 

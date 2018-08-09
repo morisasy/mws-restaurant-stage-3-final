@@ -81,18 +81,24 @@ static createIndexedDB() {
   *
  */
   static setLocalStorage(offlineData) {
-    return localStorage.setItem('offlineData', offlineData);
+    const offlineReviews = localStorage.setItem('offlineData', offlineData);
+     console.log("offline reviews saved", offlineReviews);
+    return offlineReviews;
     
   }
 
   static getLocalStorage() {
-  return localStorage.getItem('offlineData');
+      const fromOffLineToOnline = localStorage.getItem('offlineData');
+      console.log("offline reviews saved", fromOffLineToOnline);
+  return fromOffLineToOnline;
   }
 
   static clearLocalStorage() {
     localStorage.removeItem('offlineData');
   }
-
+  static lengthLocalStorage() {
+    return localStorage.length;
+  }
   static getLocalData(db_promise) {
     
     return db_promise.then((db) => {
@@ -215,6 +221,7 @@ static createIndexedDB() {
    * Store reviews in indexdDB.
    */
   static fetchReviewsById(id){
+    //this.updateOnlineStatus();
     
     const option = {
       credentials: 'include'
@@ -261,10 +268,6 @@ static createIndexedDB() {
    */
    static addReviews(review){
 
-    if (!window.navigator.onLine){
-      const offlineReviews = DBHelper.setLocalStorage(JSON.stringify(review));
-      console.log("offline reviews saved", offlineReviews);
-    }
    
     
     const option = {
@@ -301,7 +304,7 @@ static createIndexedDB() {
    */
   static updateOnlineStatus(){
       const  offlineData = JSON.parse(DBHelper.getLocalStorage());
-
+      /*
       console.log('offline data: ',offlineData);
       const offlineReviews = querySelectorAll('.offline-views');
       offlineReviews.forEach(el =>{
@@ -309,14 +312,17 @@ static createIndexedDB() {
         el.querySelector('.offline-label').remove();
       });
 
-      if (offlineData.length) {
+        if (this.lengthLocalStorage().length) {
         this.addReviews(offlineData);
+        console.log('LocalState: data sent to api: ');
       } 
-      console.log('LocalState: data sent to api: ');
-
-      //localStorage.removeItem(offlineData);
-      //localStorage.clear();
-      this.clearLocalStorage();
+      */
+      if (localStorage.length) {
+        this.addReviews(offlineData);
+        console.log('LocalState: data sent to api: ', offlineData);
+        localStorage.clear();
+      } 
+     
   }
 
   /**

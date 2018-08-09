@@ -23,6 +23,19 @@ window.initMap = () => {
 }
 
 /**
+ *  eventListener for a offline and offline mode.
+    When it is the updateOnlineStatus method send an offline reviews to the server.
+ */
+window.addEventListener('load', () => {
+
+  updateOnlineStatus = (event) => {
+    DBHelper.updateOnlineStatus();
+  }
+
+  window.addEventListener('online',  updateOnlineStatus);
+});
+
+/**
  *  Create an element.
  */
  function createNode(el){
@@ -116,8 +129,10 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
   const title = createNode('h2');
+  title.id ='reviewsTitle';
   title.innerHTML = 'Reviews';
   append(container, title);
+
  
   const id = parseInt(getParameterByName('id'));
 
@@ -157,7 +172,6 @@ createReviewHTML = (review) => {
      const offLineStatus = createNode('p');
     offLineStatus.classList.add('offline-label');
     offLineStatus.innerHTML = "Offline";
-    //offLineStatus.setAttribute("style", "color:white; width:100%; background-color: red;"):
     li.classList.add('offline-views');
     append(li, offLineStatus);   
   }
@@ -245,19 +259,30 @@ getParameterByName = (name, url) => {
   postReview = () => {
     event.preventDefault();
     let reviewData = getFormData();
-    //let offlineData = reviewData;
+    const container = document.getElementById('reviews-container');
+    const ul = document.getElementById('reviews-list');
 
-  if (!navigator.onLine){
-    createReviewHTML(reviewData);
-    console.log("update UI offLineStatus", reviewData);
-     
-  }
+    if (!navigator.onLine){
+      const offlineReviews = DBHelper.setLocalStorage(JSON.stringify(reviewData));
+      console.log("offline reviews saved", reviewData);
 
+
+    }else {
+
+      DBHelper.addReviews(reviewData);
+      console.log("update UI offLineStatus", reviewData); 
+    }
     
-  DBHelper.addReviews(reviewData);
+    const ulNewNode = createNode('ul');
+     ulNewNode.classList.add('reviewsUpdate');
     
+    append(ulNewNode, createReviewHTML(reviewData));
+    
+   
+    const titleReviews = document.getElementById('reviewsTitle');
+    container.insertBefore(ulNewNode, titleReviews.nextSibling);
     document.forms["formcomment"].reset(); 
-    //document.getElementById('formcomment').reset();
+    
     
  } 
  
