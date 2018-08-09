@@ -41,7 +41,7 @@ var gulp = require('gulp'),
         // copy
         gulp.task('copy', () => {
             return mergeStream(
-                gulp.src('./img/icons/*.png')
+                gulp.src('./img/**/*.{png,jpg,gif}')
                     .pipe(webp())
                     .pipe(gulp.dest('dist/img')),
                 gulp.src('./*.{txt,json,md,js}')
@@ -52,7 +52,7 @@ var gulp = require('gulp'),
         gulp.task('lazyImage', () =>
             gulp.src('img/*.{png,jpg,gif}')
                 .pipe(webp())
-                .pipe(gulp.dest('dist'))
+                .pipe(gulp.dest('dist/img'))
         );
         // html task
         gulp.task('html', () => {
@@ -124,7 +124,7 @@ var gulp = require('gulp'),
         
         // build task #build, clean, copy, imagemin, js, html, styles.
         gulp.task('build',['clean'], () => {
-              gulp.start('copy','imagemin','js', 'html','styles');
+              gulp.start('copy','imagemin','js', 'html','styles','minify','lazyImage');
          });
 
          // styles watch

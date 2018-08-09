@@ -5,7 +5,8 @@ var CACHE_URLS = [
           '/',
           '/index.html',
           '/restaurant.html',
-          '/js/main/app.js',
+          '/js/app.js',
+          '/sw.js',
           '/js/dbhelper.js',
           'js/lib/idb.js',
           '/js/main.js',
@@ -20,7 +21,8 @@ var CACHE_URLS = [
           '/img/7.jpg',
           '/img/8.jpg',
           '/img/9.jpg',
-          '/img/10.jpg'          
+          '/img/10.jpg'
+
 ];
 
 
@@ -50,19 +52,16 @@ self.addEventListener('activate', function(event) {
       })
     );
   });
-  //const opt = { credentials: 'same-origin' };
-
-  self.addEventListener('fetch', function(event) {
-    
-    event.respondWith(
-      caches.match(event.request).then(function(response) {
-        return response || fetch(event.request);
-      })
-    );
-  });
-
-
   
+  
+self.addEventListener('fetch', function(event) {
+
+  event.respondWith(
+    caches.match(event.request).then(function(response) {
+      return response || fetch(event.request);
+    })
+  );
+});
 
 
 

@@ -1,3 +1,48 @@
+ '/img/10.jpg',
+          '/img/1.webp',
+          '/img/2.webp',
+          '/img/3.webp',
+          '/img/4.webp',
+          '/img/5.webp',
+          '/img/6.webp',
+          '/img/7.webp',
+          '/img/8.webp',
+          '/img/9.webp',
+          '/img/10.webp'
+  
+self.addEventListener('fetch', function(event) {
+
+  /*
+  var requestUrl = new URL(event.request.url);
+  
+  if (requestUrl.origin === location.origin) {
+      if (requestUrl.pathname === '/') {
+        event.respondWith(caches.match('index.html'));
+        return;
+      }
+      if (requestUrl.pathname.startsWith('/restaurant.html')) {
+        event.respondWith(caches.match('restaurant.html'));
+        return;
+      }
+
+      if (requestUrl.pathname.startsWith('http://localhost:1337/restaurants')) {
+      
+        return;
+      }
+  
+  }
+  */
+
+  event.respondWith(
+    caches.match(event.request).then(function(response) {
+      return response || fetch(event.request);
+    })
+  );
+});
+
+
+
+
 let restaurant;
 var map;
 let restaurantID;

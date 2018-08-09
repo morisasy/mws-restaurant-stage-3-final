@@ -33,6 +33,7 @@ window.addEventListener('load', () => {
   }
 
   window.addEventListener('online',  updateOnlineStatus);
+  //location.reload();
 });
 
 /**
@@ -131,6 +132,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const title = createNode('h2');
   title.id ='reviewsTitle';
   title.innerHTML = 'Reviews';
+  title.setAttribute('style', 'text-align: center;');
   append(container, title);
 
  
@@ -138,6 +140,8 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 
   const ul = document.getElementById('reviews-list');
   let getReviews = DBHelper.fetchReviewsById(id);
+  // send offline reviews to the server.
+  DBHelper.updateOnlineStatus();
 
 
   let offlineReviews= DBHelper.getLocalDataByID('reviews', 'restaurant', id);
@@ -173,6 +177,7 @@ createReviewHTML = (review) => {
     offLineStatus.classList.add('offline-label');
     offLineStatus.innerHTML = "Offline";
     li.classList.add('offline-views');
+    offLineStatus.setAttribute('style', 'text-align: center;');
     append(li, offLineStatus);   
   }
 
