@@ -166,8 +166,9 @@ createRestaurantHTML = (restaurant) => {
   const favoriteBtn = createNode('button');
 
   favoriteBtn.innerHTML = "&#9829";
-  favoriteBtn.id = "myFavorite";
-  favoriteBtn.classList.add("fav_btn");
+  //favoriteBtn.id = "myFavorite";
+  favoriteBtn.classList.add("myFavorite");
+  //favoriteBtn.classList.add("fav_btn");
     
   favoriteBtn.addEventListener('click', (event) => {
     //event.preventDefault();

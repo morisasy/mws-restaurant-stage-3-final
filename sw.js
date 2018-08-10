@@ -58,11 +58,22 @@ self.addEventListener('fetch', function(event) {
 
   event.respondWith(
     caches.match(event.request).then(function(response) {
+      if (response) {
+          console.log(
+            '[fetch] Returning from ServiceWorker cache: ',
+            event.request.url
+          );
+        }
+        console.log('[fetch] Returning from server: ', event.request.url);
       return response || fetch(event.request);
     })
   );
 });
 
 
-
-
+self.addEventListener('message', event => {
+  if (event.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
+});
+  

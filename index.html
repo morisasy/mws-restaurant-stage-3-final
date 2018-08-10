@@ -9,28 +9,32 @@
   <meta name="keywords" content="HTML,CSS,XML,JavaScript, Udacity, Google Scholorship">
   <meta name="author" content="Mohamed Risasi">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
-  <link rel="stylesheet" href="css/styles.css">
+  <link href="css/styles.css" rel="stylesheet">
+  
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ffffff" />
   <title>Restaurant Reviews</title>
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<link rel="icon" href="img/icons/favicon.ico" type="image/x-icon">
 </head>
 
-<body>
-  <header>
-    <nav>
+<body  style="width: 100%;">
+  <header style="width: 100%;">
+    <nav style="width: 100%;">
       <h1><a href="/">Restaurant Reviews</a></h1>
     </nav>
   </header>
 
-  <main id="maincontent">
-    <section id="map-container" tableindex = "-1">
+  <main id="maincontent" style="width: 100%;">
+    <section id="map-container" tableindex = "-1" style="width: 100%">
       <div id="map" aria-label= "map" role="application"></div>
     </section>
     
-    <section id = "content">
+    <section id = "content" style="width: 100%;">
 
-      <div class="filter-options">
+      <div class="filter-options" style="width: 100%">
         <h2 class="result">Filter Results</h2>
         
         <select id="neighborhoods-select" aria-label="Select Neighborhoods" name="neighborhoods" onchange="updateRestaurants()">
@@ -45,7 +49,7 @@
     </section>
     
   </main>
-   <footer id="footer">
+   <footer id="footer" style="width: 100%;">
     Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
   </footer>
   <script type="application/javascript" charset="utf-8" src="js/app.js"></script>

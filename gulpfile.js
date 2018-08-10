@@ -41,10 +41,10 @@ var gulp = require('gulp'),
         // copy
         gulp.task('copy', () => {
             return mergeStream(
-                gulp.src('./img/**/*.{png,jpg,gif}')
+                gulp.src('./img/**/*.{png,jpg,gif,ico}')
                     .pipe(webp())
                     .pipe(gulp.dest('dist/img')),
-                gulp.src('./*.{txt,json,md,js}')
+                gulp.src('./*.{txt,json,md,js,ico}')
                     .pipe(gulp.dest('./dist'))
             );
         });

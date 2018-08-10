@@ -11,18 +11,24 @@
   <meta name="author" content="Mohamed Risasi">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
-  <link rel="stylesheet" href="css/styles.css">
+
+  <link  href="css/styles.css" rel="stylesheet">
+  <link  href="css/content.css" rel="stylesheet">
+  <link  href="css/styles-mobile.css" media="(max-width: 644px)"rel="stylesheet">
+
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ffffff" />
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
+  <link rel="shortcut icon" href="img/icons/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
   
 </head>
 
-<body class="inside" >
+<body class="inside" style="width: 100%;">
   <!-- Beginning header -->
-  <header id = "header">
+  <header id = "header" style="width: 100%;">
     <!-- Beginning nav -->
-    <nav >
+    <nav  style="width: 100%;">
       <h1><a href="/">Restaurant Reviews</a></h1>
        <!-- Beginning breadcrumb -->
     <ul id="breadcrumb" aria-label = "breadcrumb">
@@ -60,7 +66,10 @@
     <!-- End reviews -->
     <section id = "comments" class = "box">
 
-      <form role="form" action="#" method="post" id ="formcomment"> 
+      <form role="form" action="#" method="post" id ="formcomment" style=" width: 100%;padding: 0.8em;
+  margin-left: 0;
+  margin-right: 0;
+  height: auto;"> 
         <fieldset >
             <legend>Write a reviews</legend>
               
@@ -121,7 +130,6 @@
   <script type="application/javascript" charset="utf-8" src="js/lib/idb.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
   
- 
   <!-- Main javascript file -->
   <script type="text/javascript" src="js/restaurant_info.js"></script>
   <!-- Google Maps -->
