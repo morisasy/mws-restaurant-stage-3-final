@@ -23,8 +23,12 @@
  
  // create DB function createIndexedDB()
 static createIndexedDB() {
+  if (!navigator.serviceWorker) {
+    return Promise.resolve();
+   }
  
   if (!('indexedDB' in window)) {return null;}
+  
   return idb.open(DBHelper.dbName, 2, (upgradeDb) =>  {
       switch(upgradeDb.oldVersion) {
         case 0:

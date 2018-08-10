@@ -8,7 +8,7 @@ var CACHE_URLS = [
           '/js/app.js',
           '/sw.js',
           '/js/dbhelper.js',
-          'js/lib/idb.js',
+          'js/idb.js',
           '/js/main.js',
           '/js/restaurant_info.js',
           '/css/styles.css',
@@ -53,7 +53,7 @@ self.addEventListener('activate', function(event) {
     );
   });
   
-  
+/*
 self.addEventListener('fetch', function(event) {
 
   event.respondWith(
@@ -69,7 +69,54 @@ self.addEventListener('fetch', function(event) {
     })
   );
 });
+*/
+self.addEventListener('fetch', function(event) {
+/*
+  var requestUrl = new URL(event.request.url);
 
+  if (requestUrl.origin === location.origin) {
+    if (requestUrl.pathname === '/') {
+      event.respondWith(caches.match('/skeleton'));
+      return;
+    }
+   }
+   */
+
+    
+  event.respondWith(
+    caches.match(event.request)
+      .then(function(response) {
+        // Cache hit - return response
+        if (response) {
+          return response;
+        }
+        var fetchRequest = event.request.clone();
+        
+
+        return fetch(fetchRequest).then(
+          function(response) {
+            // Check if we received a valid response
+            if(!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
+            }
+
+    
+            var responseToCache = response.clone();
+            console.log('response To Cache: ', responseToCache);
+
+            caches.open(CACHE_VERSION)
+              .then(function(cache) {
+                console.log('responseToCache stored: ', cache);
+
+                //cache.put(event.request, responseToCache);
+              });
+
+            return response;
+          }
+        );
+      })
+    );
+});
 
 self.addEventListener('message', event => {
   if (event.data.action === 'skipWaiting') {

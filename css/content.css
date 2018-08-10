@@ -1,8 +1,16 @@
 
 /* ====================== Restaurant Details ====================== */
-.inside {
- 
-   letter-spacing: 0;
+  
+
+.inside{ 
+  min-width: 300px;
+  background-color: #fdfdfd;
+  grid-gap: 10px;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto 1fr;
+  justify-content: center;
+  letter-spacing: 0;
+  
 }
 .inside header {
   position: fixed;
